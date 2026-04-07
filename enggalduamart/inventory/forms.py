@@ -1,0 +1,37 @@
+from django import forms
+from .models import Pemesanan, Barang
+
+class BarangDatangForm(forms.ModelForm):
+    class Meta:
+        model = Pemesanan
+        fields = ['jumlah_datang', 'keterangan']
+
+        widgets = {
+            'jumlah_datang': forms.NumberInput(attrs={
+                'class': 'form-control',
+                'min': 1
+            }),
+            'keterangan': forms.Textarea(attrs={
+                'class': 'form-control',
+                'rows': 3,
+                'placeholder': 'Contoh: 2 rusak, 1 bocor'
+            }),
+        }
+
+class BarangForm(forms.ModelForm):
+    class Meta:
+        model = Barang
+        fields = '__all__'
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        # kalau edit → disable kode_barang
+        if self.instance and self.instance.pk:
+            self.fields['kode_barang'].disabled = True
+
+    def clean_kode_barang(self):
+        # pastikan nilai lama tetap dipakai saat edit
+        if self.instance and self.instance.pk:
+            return self.instance.kode_barang
+        return self.cleaned_data.get('kode_barang')

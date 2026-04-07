@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% block title %}Verifikasi Pemesanan{% endblock %}
+
+{% block content %}
+<h3 class="mb-3">Verifikasi Pemesanan Barang</h3>
+<div class="row mb-3">
+  <div class="col-md-8">
+    <p>Verifikasi Pemesanan Barang, Pastikan barang yang di pesan tersedia di gudang</p>
+  </div>
+
+<div class="container mt-4">
+  <div class="card shadow">
+    <div class="card-body">
+    <table class="table table-bordered table-hover align-middle mb-0">
+      <thead class="table-dark">
+        <tr>
+          <th>Tanggal</th>
+          <th>Pemesan</th>
+          <th>Kode Barang</th>
+          <th>Nama Barang</th>
+          <th>Jumlah</th>
+          <th>Aksi</th>
+        </tr>
+      </thead>
+      <tbody>
+      {% for p in pemesanan_list %}
+        <tr>
+          <td>{{ p.tanggal_pesan }}</td>
+          <td>{{ p.user_2.username }}</td>
+          <td>{{ p.barang.kode_barang }}</td>
+          <td>{{ p.barang.nama_barang }}</td>
+          <td>{{ p.jumlah }}</td>
+          <td>
+            <a href="{% url 'pemesanan_verifikasi' p.pk 'setuju' %}" class="btn btn-sm btn-success">Setujui</a>
+            <a href="{% url 'pemesanan_verifikasi' p.pk 'tolak' %}" class="btn btn-sm btn-danger">Tolak</a>
+          </td>
+        </tr>
+        {% empty %}
+          <tr><td colspan="6" class="text-center">Tidak ada pesanan pending.</td></tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

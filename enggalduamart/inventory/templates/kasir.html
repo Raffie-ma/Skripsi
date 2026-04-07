@@ -1,0 +1,98 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="container mt-4">
+
+    <h3 class="mb-4 fw-bold">Kasir Penjualan</h3>
+
+    <div class="row g-4">
+        <div class="col-md-4">
+            <div class="card shadow-sm border-0 rounded-4">
+                <div class="card-body">
+
+                    <form method="POST" action="{% url 'tambah_keranjang' %}">
+                        {% csrf_token %}
+
+                        <div class="mb-3">
+                            <label class="form-label">Pilih Barang</label>
+                            <select name="barang" class="form-select select2">
+                                <option value="">Pilih Barang</option>
+                                {% for barang in barangs %}
+                                    <option value="{{ barang.kode_barang }}">
+                                        {{ barang.nama_barang }} - Rp {{ barang.harga }} (stok {{ barang.stock }})
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Jumlah</label>
+                            <input type="number" name="jumlah" class="form-control" min="1" required>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary w-100">
+                            Tambah
+                        </button>
+
+                    </form>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-8">
+            <div class="card shadow-sm border-0 rounded-4">
+                <div class="card-body">
+
+                    <h5 class="mb-3 fw-semibold">Keranjang</h5>
+
+                    <div class="table-responsive">
+                        <table class="table align-middle">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>Barang</th>
+                                    <th>Qty</th>
+                                    <th>Harga</th>
+                                    <th>Subtotal</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                {% for item in keranjang %}
+                                <tr>
+                                    <td>{{ item.nama }}</td>
+                                    <td>{{ item.jumlah }}</td>
+                                    <td>Rp {{ item.harga }}</td>
+                                    <td>Rp {{ item.subtotal }}</td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="4" class="text-center text-muted">
+                                        Keranjang kosong
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+       
+                    <h4 class="text-end fw-bold mt-3">
+                        Total: Rp {{ total }}
+                    </h4>
+                    
+                    <form method="POST" action="{% url 'proses_bayar' %}">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-success w-100 mt-2">
+                            Proses Pembayaran
+                        </button>
+                    </form>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+{% block title %}Daftar Barang{% endblock %}
+
+{% block content %}
+<h3 class="mb-3">Daftar Barang</h3>
+
+<div class="row mb-3">
+  <div class="col-md-6">
+    <form class="d-flex" method="get">
+      <input class="form-control me-2" type="search" name="q"
+             placeholder="Cari nama / kode" value="{{ q }}">
+      <button class="btn btn-outline-primary" type="submit">Cari</button>
+    </form>
+  </div>
+  <div class="col-md-6 text-end">
+    <a href="{% url 'barang_create' %}" class="btn btn-primary btn-sm">+ Tambah Barang</a>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-body p-0">
+    <table class="table table-bordered">
+      <thead class="table-dark">
+        <tr>
+          <th>Kode</th>
+          <th>Nama</th>
+          <th>Stok</th>
+          <th>Harga</th>
+          <th>Aksi</th>
+        </tr>
+      </thead>
+      <tbody>
+      {% for b in barang_list %}
+        <tr class="{% if b.is_low_stock %}table-danger{% endif %}">
+          <td>{{ b.kode_barang }}</td>
+          <td>{{ b.nama_barang }}</td>
+          <td><span class="badge {% if b.is_low_stock %}bg-danger{% else %}bg-success{% endif %}">{{ b.stock }}</span> </td>
+          <td>Rp.{{ b.harga }}</td>
+          <td>
+            <a href="{% url 'barang_update' b.kode_barang %}" class="btn btn-sm btn-warning">Edit</a>
+            <a href="{% url 'barang_delete' b.kode_barang %}" class="btn btn-sm btn-danger">Hapus</a>
+          </td>
+        </tr>
+      {% empty %}
+        <tr><td colspan="6" class="text-center">Belum ada barang.</td></tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

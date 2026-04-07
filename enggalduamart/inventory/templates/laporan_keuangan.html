@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+{% load humanize %}
+{% block title %}Laporan Penjualan{% endblock %}
+
+{% block content %}
+<h3>Laporan Penjualan</h3>
+
+<div class="row mb-4">
+  <div class="col-md-4">
+    <div class="card bg-success text-white">
+      <div class="card-body">
+        <h6>Pemasukan</h6>
+        <h4>Rp. {{ pemasukan|intcomma }}</h4>
+      </div>
+    </div>
+  </div>
+
+
+  <div class="col-md-4">
+    <div class="card bg-primary text-white">
+      <div class="card-body">
+        <h6>Saldo</h6>
+        <h4>Rp. {{ saldo|intcomma }}</h4>
+      </div>
+    </div>
+  </div>
+</div>
+
+<form method="GET" class="mb-3">
+  <div class="d-flex justify-content-between align-items-end flex-wrap gap-3 mb-3 p-3 bg-light rounded shadow-sm">
+    <div>
+      <label class="fw-semibold mb-1">📅 Pilih Tanggal</label>
+        <input type="date" name="tanggal" value="{{ tanggal }}">
+        <button type="submit" class="btn btn-primary btn-sm">Filter</button>
+    </div>
+    <div class="ms-auto">
+            <div class="text-muted small">📊 Laporan ditampilkan untuk:</div>
+            <div class="fw-bold">{{ tanggal }}</div>
+    </div>
+</form>
+
+<table class="table table-bordered">
+  <thead class="table-dark">
+    <tr>
+      <th>Tanggal</th>
+      <th>Jenis</th>
+      <th>Keterangan</th>
+      <th>Jumlah</th>
+      <th>Total</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for t in transaksi %}
+    <tr>
+      <td>{{ t.tanggal|date:"d/m/Y " }}</td>
+      <td>
+        {% if t.jenis == 'masuk' %}
+          <span class="badge bg-success">Masuk</span>
+        {% else %}
+          <span class="badge bg-danger">Keluar</span>
+        {% endif %}
+      </td>
+      <td style="white-space: pre-line;">{{ t.keterangan }}</td>
+      <td>{{ t.jumlah }}</td>
+      <td>Rp {{ t.total|intcomma }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

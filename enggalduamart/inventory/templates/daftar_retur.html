@@ -1,0 +1,93 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="container mt-4">
+    <h2 class="mb-4">Daftar Retur Barang</h2>
+
+    {% if request.session.role == 'karyawan' %}
+    <a href="{% url 'tambah_retur' %}" class="btn btn-primary mb-3">
+        + Tambah Retur
+    </a>
+    {% endif %}
+    {% if messages %}
+        {% for message in messages %}
+             {% if 'retur' in message.tags %}
+             <div class="alert alert-{{ message.tags }}">
+                 {{ message }}
+            </div>
+            {% endif %}
+        {% endfor %}
+    {% endif %}
+
+    <div class="card shadow">
+        <div class="card-body">
+            <table class="table table-bordered ">
+                <thead class="table-dark">
+                    <tr>
+                        <th>No</th>
+                        <th>Barang</th>
+                        <th>Jumlah</th>
+                        <th>Alasan</th>
+                        <th>Dibuat Oleh</th>
+                        <th>Tanggal</th>
+                        <th>Status</th>
+                        {% if request.session.role == 'admin' %}
+                        <th>Aksi</th>
+                        {% endif %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for retur in returs %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ retur.barang.nama_barang }}</td>
+                        <td>{{ retur.jumlah }}</td>
+                        <td>{{ retur.get_alasan_display }}</td>
+                        <td>{{ retur.user.username }}</td>
+                        <td>{{ retur.tanggal_retur|date:"d-m-Y H:i" }}</td>
+                        <td>
+                            {% if retur.status == 'menunggu' %}
+                                <span class="badge bg-warning text-dark">Menunggu</span>
+                            {% elif retur.status == 'disetujui' %}
+                                <span class="badge bg-success">Disetujui</span>
+                            {% else %}
+                                <span class="badge bg-danger">Ditolak</span>
+                            {% endif %}
+                        </td>
+
+                        {% if request.session.role == 'admin' %}
+                        <td>
+                            {% if retur.status == 'menunggu' %}
+                                <form method="POST" action="{% url 'ubah_status_retur' retur.id %}" style="display:inline;">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="status" value="disetujui">
+                                    <button type="submit" class="btn btn-success btn-sm">
+                                        Setujui
+                                    </button>
+                                </form>
+
+                                <form method="POST" action="{% url 'ubah_status_retur' retur.id %}" style="display:inline;">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="status" value="ditolak">
+                                    <button type="submit" class="btn btn-danger btn-sm">
+                                        Tolak
+                                    </button>
+                                </form>
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
+                        {% endif %}
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="8" class="text-center">Belum ada data retur</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

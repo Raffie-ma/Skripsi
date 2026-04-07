@@ -1,0 +1,120 @@
+{% extends 'base.html' %}
+{% block title %}Daftar Pemesanan{% endblock %}
+
+{% block content %}
+<h3 class="mb-3">
+  {% if role == 'admin' %}Daftar Semua Pemesanan{% else %}Riwayat Pemesanan{% endif %}
+</h3>
+
+<div class="col-md-12 text-end mb-3">
+  <a href="{% url 'dashboard' %}" class="btn btn-primary btn-sm">Beranda</a>
+</div>
+
+<form method="GET" class="mb-3">
+  <div class="d-flex align-items-end gap-2">
+
+    <div>
+      <label class="form-label fw-semibold">📅 Pilih Bulan</label>
+      <input type="month" name="bulan" class="form-control"
+             value="{{ request.GET.bulan }}">
+    </div>
+
+    <button type="submit" class="btn btn-primary btn-sm">
+      Filter
+    </button>
+
+    <a href="{% url 'pemesanan_list' %}" class="btn btn-secondary btn-sm">
+      Reset
+    </a>
+
+  </div>
+</form>
+
+<div class="card">
+  <div class="card-body ">
+    <table class="table table-bordered">
+      <thead class="table-dark">
+        <tr>
+          <th>Tanggal</th>
+          {% if role == 'admin' %}
+            <th>Pemesan</th>
+          {% endif %}
+          <th>Kode Barang</th>
+          <th>Nama Barang</th>
+          <th>Jumlah Pesanan</th>
+          <th>Keterangan</th>
+          <th>Status</th>
+          {% if role == 'karyawan' %}
+            <th>Aksi</th>
+          {% endif %}
+          {% if role == 'admin' %}
+            <th>Verifikasi</th>
+          {% endif %}
+        </tr>
+      </thead>
+      <tbody>
+      {% for p in pemesanan_list %}
+        <tr>
+          <td>{{ p.tanggal_pesan|date:"d/m/Y" }}</td>
+          {% if role == 'admin' %}
+            <td>{{ p.user_2.username }}</td>
+          {% endif %}
+          <td>{{ p.barang.kode_barang }}</td>
+          <td>{{ p.barang.nama_barang }}</td>
+          <td>{{ p.jumlah }}</td>
+          <td>{% if p.jumlah_datang %}
+                 Datang: {{ p.jumlah_datang }} <br>
+                 Keterangan: {{ p.keterangan }}
+              {% else %}
+                 -
+              {% endif %}
+          </td>
+          <td>
+            {% if p.status_2 == 'pending' %}
+              <span class="badge bg-warning text-dark">Pending</span>
+            {% elif p.status_2 == 'disetujui' %}
+              <span class="badge bg-info">Disetujui</span>
+            {% elif p.status_2 == 'datang' %}
+              <span class="badge bg-success">Barang Datang</span>
+            {% else %}
+              <span class="badge bg-danger">Ditolak</span>
+            {% endif %}
+          </td>
+          
+          {% if role == 'karyawan' %}
+            <td>
+              {% if p.status_2 == 'disetujui' %}
+                <a href="{% url 'barang_datang_konfirmasi' p.pk %}"class="btn btn-sm btn-primary"title="Konfirmasi barang datang">
+                  Check Datang</a>
+              {% else %}
+                -
+              {% endif %}
+            </td>
+          {% endif %}
+          
+          {% if role == 'admin' %}
+            <td>
+              {% if p.status_2 == 'pending' %}
+                <a href="{% url 'pemesanan_verifikasi' p.pk 'setuju' %}"
+                   class="btn btn-sm btn-success me-1">Setujui</a>
+                <a href="{% url 'pemesanan_verifikasi' p.pk 'tolak' %}"
+                   class="btn btn-sm btn-danger">Tolak</a>
+              {% else %}
+                -
+              {% endif %}
+            </td>
+          {% endif %}
+        </tr>
+      {% empty %}
+        <tr>
+          <td colspan="{% if role == 'admin' %}8{% elif role == 'karyawan' %}7{% else %}6{% endif %}" 
+              class="text-center">
+            Belum ada pemesanan.
+          </td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

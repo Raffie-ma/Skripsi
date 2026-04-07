@@ -1,0 +1,163 @@
+{% extends 'base.html' %}
+{% load humanize %}
+{% block title %}Dashboard Karyawan{% endblock %}
+
+{% block content %}
+<h3 class="mb-3">Dashboard Karyawan</h3>
+
+<div class="row mb-3">
+  <div class="col-md-8">
+    <p>Selamat datang, Karyawan. Anda dapat memantau stok dan membuat pemesanan barang.</p>
+  </div>
+</div>
+
+<div class="row mb-4 justify-content-center g-3">
+  <div class="col-md-4">
+    <div class="card shadow-sm border-0">
+      <div class="card-body text-center">
+        <h6>Total Produk</h6>
+        <h3>{{ total_barang }}</h3>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-4">
+    <div class="card shadow-sm border-0">
+      <div class="card-body text-center">
+        <h6>Barang Hampir Habis</h6>
+        <h3 class="text-danger">{{ barang_menipis }}</h3>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-4">
+    <div class="card shadow-sm border-0">
+      <div class="card-body text-center">
+        <h6>Total Stok</h6>
+        <h3>{{ total_stok }}</h3>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div class="row">
+  <div class="col-md-8">
+    <div class="card mb-3">
+      <div class="card-header d-flex justify-content-between">
+        <span>Daftar Barang</span>
+
+        <form class="d-flex align-items-center gap-2" method="get">
+        <input class="form-control form-control-sm"
+               type="search"
+               name="pencarian"
+               value="{{ pencarian }}"
+               placeholder="Cari nama / kode"
+              style="max-width: 220px;">
+        <button class="btn btn-sm btn-outline-primary">Cari</button>
+        
+        <a href="?filter=menipis&q={{ q }}"class="btn btn-sm btn-outline-danger ms-2"> Menipis</a>
+        <a href="/"class="btn btn-sm btn-outline-secondary">Semua</a>
+
+</form>
+      </div>
+      <div class="card-body p-0">
+        <table class="table table-bordered">
+          <thead class="table-dark">
+            <tr>
+              <th>Kode</th>
+              <th>Nama</th>
+              <th>Harga</th>
+              <th>Stok</th>
+              <th>Aksi</th>
+            </tr>
+          </thead>
+          <tbody>
+          {% for b in barang_list %}
+            <tr class="{% if b.is_low_stock %}table-danger{% endif %}">
+              <td>{{ b.kode_barang }}</td>
+              <td>{{ b.nama_barang }}</td>
+              <td>Rp.{{ b.harga|intcomma }}</td>
+              <td><span class="badge {% if b.is_low_stock %}bg-danger{% else %}bg-success{% endif %}">{{ b.stock }}</span> </td>
+              <td>
+                <a href="{% url 'pemesanan_create' b.kode_barang %}"
+                   class="btn btn-sm btn-success">
+                   Pesan
+                </a>
+              </td>
+            </tr>
+          {% empty %}
+            <tr>
+              <td colspan="5" class="text-center">
+                Belum ada barang.
+              </td>
+            </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="card mb-3">
+      <div class="card-header">
+        Notifikasi
+      </div>
+      <div class="card-body" style="max-height:350px; overflow-y:auto;">
+        {% if notif_list %}
+        <ul class="list-group list-group-flush">
+          {% for n in notif_list %}
+          <li class="list-group-item d-flex justify-content-between align-items-start">
+            <div>
+              <strong>{{ n.barang.nama_barang }}</strong><br>
+              {{ n.pesan }}
+            </div>
+            <a href="{% url 'notif_baca' n.id %}"
+               class="btn btn-sm btn-outline-danger ms-2"
+               title="Tandai sudah dibaca">
+               Hapus
+            </a>
+          </li>
+          {% endfor %}
+        </ul>
+        {% else %}
+        <div class="text-center text-muted">
+          <p class="mb-0">Semua stok aman</p>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        📊 Barang Paling Sering Dibeli
+      </div>
+      <div class="card-body p-0">
+        <table class="table table-sm mb-0">
+          <thead class="table-light">
+            <tr>
+              <th>Barang</th>
+              <th>Total</th>
+            </tr>
+          </thead>
+          <tbody>
+          {% for item in barang_terlaris %}
+            <tr>
+              <td>{{ item.barang__nama_barang }}</td>
+              <td>{{ item.total_terjual }}</td>
+            </tr>
+          {% empty %}
+            <tr>
+              <td colspan="2" class="text-center text-muted">
+                Belum ada data penjualan
+              </td>
+            </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

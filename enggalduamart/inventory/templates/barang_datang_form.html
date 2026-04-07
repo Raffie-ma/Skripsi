@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% block title %}Konfirmasi Barang Datang{% endblock %}
+
+{% block content %}
+<h4 class="mb-3">Konfirmasi Barang Datang</h4>
+
+<div class="card">
+  <div class="card-body">
+    <p>
+      <strong>{{ pemesanan.barang.nama_barang }}</strong><br>
+      Jumlah Disetujui: <strong>{{ pemesanan.jumlah }}</strong>
+    </p>
+
+    <form method="post">
+      {% csrf_token %}
+
+      <div class="mb-3">
+        <label class="form-label">Jumlah Barang Datang</label>
+        {{ form.jumlah_datang }}
+        {% for error in form.jumlah_datang.errors %}
+          <div class="text-danger small">{{ error }}</div>
+        {% endfor %}
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Keterangan</label>
+        {{ form.keterangan }}
+      </div>
+
+      <button type="submit" class="btn btn-success">
+        Simpan
+      </button>
+      <a href="{% url 'pemesanan_list' %}" class="btn btn-secondary">
+        Batal
+      </a>
+    </form>
+  </div>
+</div>
+{% endblock %}

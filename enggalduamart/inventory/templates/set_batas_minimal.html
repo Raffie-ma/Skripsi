@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% block title %}Setting Batas Minimal{% endblock %}
+
+{% block content %}
+<div class="card">
+  <div class="card-header bg-dark text-white">
+    Setting Batas Minimal Barang
+  </div>
+  <div class="card-body">
+
+    <form method="post">
+      {% csrf_token %}
+
+      <div class="mb-3">
+        <label class="form-label">Batas Minimal Barang </label>
+        <input type="number" name="batas_minimal" class="form-control" required>
+      </div>
+
+      <button type="submit" class="btn btn-primary">
+        Simpan
+      </button>
+
+      <a href="{% url 'dashboard' %}" class="btn btn-secondary">
+        Kembali
+      </a>
+
+    </form>
+
+  </div>
+</div>
+{% endblock %}
