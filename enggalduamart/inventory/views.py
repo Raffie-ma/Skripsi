@@ -5,7 +5,7 @@ from django.db.models import F
 from django.http import HttpResponseForbidden
 from .models import User, Barang, Pemesanan, Notifikasi,TransaksiKeuangan,Retur,TransaksiPenjualan,DetailPenjualan
 from django import forms
-from django.db import models ,transaction
+from django.db import models ,transaction , IntegrityError
 from django.db.models import F, ExpressionWrapper, DecimalField,Sum
 from django.contrib.auth.decorators import login_required
 from django.utils.timezone import now
@@ -110,7 +110,6 @@ class BarangForm(forms.ModelForm):
         model = Barang
         fields = ['kode_barang','nama_barang', 'stock', 'harga']
 
-from django.contrib import messages
 
 @require_login
 @require_role('admin')
@@ -123,15 +122,13 @@ def set_batas_minimal(request):
 
             Barang.objects.all().update(batas_minimal=batas)
 
-            messages.success(request, f"Batas minimal berhasil diubah menjadi {batas} untuk semua barang.")
-            return redirect('dashboard')
+            messages.success(request,f"Batas minimal barang menjadi {batas}",extra_tags='success_batas')
+            return redirect('barang_list') 
 
     return render(request, 'set_batas_minimal.html',{
         'role':'admin',
     })
 
-
-from django.db.models import Q, F
 
 @require_login
 @require_role('admin')
@@ -160,30 +157,45 @@ def barang_list(request):
     return render(request, 'barang_list.html', context)
 
 
+from django.contrib import messages
+from django.db import IntegrityError
+
 @require_login
 @require_role('admin')
 def barang_create(request):
     if request.method == 'POST':
         form = BarangForm(request.POST)
-        if form.is_valid():
-            barang = form.save()
-            if barang.stock <= barang.batas_minimal:
-                karyawan_list = User.objects.filter(role='karyawan')
-                for u in karyawan_list:
-                    Notifikasi.objects.create(
-                        user=u,
-                        barang=barang,
-                        pesan=f"Stok {barang.nama_barang} menipis ({barang.stock})"
-                    )
 
-            messages.success(request, "Barang berhasil ditambahkan",extra_tags='barang')
-            return redirect('barang_list')
+        if form.is_valid():
+            try:
+                barang = form.save()
+                if barang.stock <= barang.batas_minimal:
+                    karyawan_list = User.objects.filter(role='karyawan')
+                    for u in karyawan_list:
+                        Notifikasi.objects.get_or_create(
+                            user=u,
+                            barang=barang,
+                            pesan=f"Stok {barang.nama_barang} menipis ({barang.stock})",
+                            dibaca=False
+                        )
+
+                
+                messages.success(request, "Barang berhasil ditambahkan", extra_tags='success_barang')
+                return redirect('barang_list')
+
+            except IntegrityError:
+                messages.error(request, "Isi data dengan benar!", extra_tags='error_barang')
+
         else:
-            message.error(request,"isi data dengan benar")
+            messages.error(request, "Kode barang sudah digunakan!", extra_tags='error_barang')
+
     else:
         form = BarangForm()
 
-    return render(request, 'barang_form.html', {'form': form,'judul': 'Tambah Barang'})
+    return render(request, 'barang_form.html', {
+        'form': form,
+        'judul': 'Tambah Barang'
+    })
 
 
 

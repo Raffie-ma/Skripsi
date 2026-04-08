@@ -22,16 +22,18 @@ class BarangForm(forms.ModelForm):
     class Meta:
         model = Barang
         fields = '__all__'
+        error_messages = {
+            'kode_barang': {
+                'unique': '⚠️ Kode barang sudah digunakan!'
+            }
+        }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-
-        # kalau edit → disable kode_barang
         if self.instance and self.instance.pk:
             self.fields['kode_barang'].disabled = True
 
     def clean_kode_barang(self):
-        # pastikan nilai lama tetap dipakai saat edit
         if self.instance and self.instance.pk:
             return self.instance.kode_barang
         return self.cleaned_data.get('kode_barang')

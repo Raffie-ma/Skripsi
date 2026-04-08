@@ -3,7 +3,17 @@
 
 {% block content %}
 <h3 class="mb-3">Daftar Barang</h3>
-
+{% if messages %}
+  <div id="notif-container">
+    {% for message in messages %}
+      {% if 'success_barang' in message.tags or 'success_batas' in message.tags %}
+        <div class="alert alert-success fade show mb-2">
+          {{ message }}
+        </div>
+      {% endif %}
+    {% endfor %}
+  </div>
+{% endif %}
 <div class="row mb-3">
   <div class="col-md-6">
     <form class="d-flex" method="get">

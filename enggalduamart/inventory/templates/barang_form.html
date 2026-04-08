@@ -2,19 +2,18 @@
 {% block title %}{{ judul }}{% endblock %}
 
 {% block content %}
+
 <div class="container mt-4">
-
 <h3 class="mb-3">{{ judul }}</h3>
-
+{% if messages %}
+  {% for message in messages %}
+    <div class="alert alert-danger">
+      {{ message }}
+    </div>
+  {% endfor %}
+{% endif %}
 <div class="card shadow-sm">
   <div class="card-body">
-
-    {% if form.errors %}
-    <div class="alert alert-danger">
-      {{ form.errors }}
-    </div>
-    {% endif %}
-
     <form method="post">
       {% csrf_token %}
 
