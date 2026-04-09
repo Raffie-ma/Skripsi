@@ -19,7 +19,7 @@
 
     <div class="mb-3">
      <label class="form-label me-3">Kode Barang</label>
-     {% if form.instance.pk %}
+     {% if judul == 'Edit Barang' %}
         <span class="form-control d-inline-block w-auto bg-light px-3">
           {{ form.instance.kode_barang }}
         </span>
