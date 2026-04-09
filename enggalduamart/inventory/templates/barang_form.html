@@ -17,10 +17,16 @@
     <form method="post">
       {% csrf_token %}
 
-      <div class="mb-3">
-        <label class="form-label">Kode Barang</label>
+    <div class="mb-3">
+     <label class="form-label me-3">Kode Barang</label>
+     {% if form.instance.pk %}
+        <span class="form-control d-inline-block w-auto bg-light px-3">
+          {{ form.instance.kode_barang }}
+        </span>
+      {% else %}
         {{ form.kode_barang }}
-      </div>
+      {% endif %}
+    </div>
 
       <div class="mb-3">
         <label class="form-label">Nama Barang</label>

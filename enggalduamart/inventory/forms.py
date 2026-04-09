@@ -31,7 +31,8 @@ class BarangForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         if self.instance and self.instance.pk:
-            self.fields['kode_barang'].disabled = True
+           self.fields['kode_barang'].disabled = True
+           self.fields['kode_barang'].widget.attrs.update({'readonly': True,'class': 'form-control bg-light' })
 
     def clean_kode_barang(self):
         if self.instance and self.instance.pk:
