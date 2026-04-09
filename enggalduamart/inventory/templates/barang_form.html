@@ -17,16 +17,17 @@
     <form method="post">
       {% csrf_token %}
 
-    <div class="mb-3">
-     <label class="form-label me-3">Kode Barang</label>
-     {% if judul == 'Edit Barang' %}
-        <span class="form-control d-inline-block w-auto bg-light px-3">
-          {{ form.instance.kode_barang }}
-        </span>
-      {% else %}
+    {% if judul == 'Edit Barang' %}
+       <div class="mb-3">
+         <label class="form-label me-3">Kode Barang</label>
+            <span class="form-control d-inline-block w-auto bg-light px-3">
+              {{ form.instance.kode_barang }}
+            </span>
+          <input type="hidden" name="kode_barang" value="{{ form.instance.kode_barang }}">
+       </div>
+    {% else %}
         {{ form.kode_barang }}
-      {% endif %}
-    </div>
+    {% endif %}
 
       <div class="mb-3">
         <label class="form-label">Nama Barang</label>
