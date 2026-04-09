@@ -178,20 +178,14 @@ def barang_create(request):
                             pesan=f"Stok {barang.nama_barang} menipis ({barang.stock})",
                             dibaca=False
                         )
-
-                
                 messages.success(request, "Barang berhasil ditambahkan", extra_tags='success_barang')
                 return redirect('barang_list')
-
             except IntegrityError:
                 messages.error(request, "Isi data dengan benar!", extra_tags='error_barang')
-
         else:
             messages.error(request, "Kode barang sudah digunakan!", extra_tags='error_barang')
-
     else:
         form = BarangForm()
-
     return render(request, 'barang_form.html', {
         'form': form,
         'judul': 'Tambah Barang'
@@ -211,20 +205,7 @@ def barang_update(request, kode_barang):
             barang = form.save(commit=False)
             stok_baru = barang.stock
             barang.save()
-
-            
-            if stok_baru < stok_lama:
-                jumlah_terjual = stok_lama - stok_baru
-                total = jumlah_terjual * barang.harga
-
-                TransaksiKeuangan.objects.create(
-                    jenis='masuk',
-                    jumlah=jumlah_terjual,
-                    total=total,
-                    keterangan=f"Penjualan {barang.nama_barang}"
-                )
-
-
+      
             if barang.stock <= barang.batas_minimal:
                 karyawan_list = User.objects.filter(role='karyawan')
                 for u in karyawan_list:
